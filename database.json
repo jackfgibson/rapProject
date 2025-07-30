@@ -2,46 +2,31 @@
   "products": [
     {
       "id": 1,
-      "name": "Professional Table Tennis Paddle",
-      "price": 89.99,
-      "category": "paddles",
-      "on_hand": 25,
-      "description": "High-quality carbon fiber paddle for professional players"
-    },
-    {
-      "id": 2,
-      "name": "Premium Table Tennis Balls (6-pack)",
-      "price": 11.99,
-      "category": "balls",
+      "name": "Table Tennis Paddle",
+      "price": 25.0,
+      "category": "Paddles",
       "on_hand": 100,
-      "description": "ITTF approved 3-star tournament balls"
-    },
-    {
-      "id": 3,
-      "name": "Competition Table Tennis Table",
-      "price": 899.99,
-      "category": "tables",
-      "on_hand": 5,
-      "description": "Official size tournament table with net included"
-    },
-    {
-      "id": 4,
-      "name": "Table Tennis Training Set",
-      "price": 45.99,
-      "category": "accessories",
-      "on_hand": 30,
-      "description": "Complete training set with paddles, balls, and net"
+      "description": "High-quality wooden paddle for professional play"
     }
   ],
   "users": [
     {
       "username": "admin",
       "street_address": "123 Admin St",
-      "email": "admin@tabletennis.com",
-      "password": "$2a$10$rOVl2GZt5/LPTvU0V4gzWOMhC5l3y0qzrCHGZ8d3j7L5d8O0K1c2W",
+      "email": "admin@example.com",
+      "password": "hashedpassword",
       "first": "Admin",
       "last": "User",
       "role": "admin"
+    },
+    {
+      "username": "john_doe",
+      "street_address": "456 Player Rd",
+      "email": "john@example.com",
+      "password": "hashedpassword",
+      "first": "John",
+      "last": "Doe",
+      "role": "user"
     }
   ],
   "orders": []

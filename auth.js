@@ -1,89 +1,46 @@
 const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs');
-const database = require('./database');
+const bcrypt = require('bcrypt');
+const fs = require('fs');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
+// Load database
+const database = JSON.parse(fs.readFileSync('./database.json'));
+
+const JWT_SECRET = 'your-secret-key';
 
 // Authentication middleware
-const authenticateToken = async (req, res, next) => {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
+const authenticateToken = (req, res, next) => {
+  const token = req.header('Authorization')?.replace('Bearer ', '');
+  if (!token) return res.status(401).json({ message: 'Unauthorized' });
 
-  if (!token) {
-    return res.status(401).json({
-      success: false,
-      message: 'Access token required'
-    });
-  }
-
-  try {
-    const decoded = jwt.verify(token, JWT_SECRET);
-    const user = await database.getUserByUsername(decoded.username);
-    
-    if (!user) {
-      return res.status(401).json({
-        success: false,
-        message: 'Invalid token'
-      });
-    }
-
-    req.user = { username: user.username, role: user.role };
+  jwt.verify(token, JWT_SECRET, (err, user) => {
+    if (err) return res.status(403).json({ message: 'Forbidden' });
+    req.user = user;
     next();
-  } catch (error) {
-    return res.status(403).json({
-      success: false,
-      message: 'Invalid or expired token'
-    });
-  }
+  });
 };
 
-// Authorization middleware for admin only
+// Role checking middleware
 const requireAdmin = (req, res, next) => {
   if (req.user.role !== 'admin') {
-    return res.status(403).json({
-      success: false,
-      message: 'Admin access required'
-    });
+    return res.status(403).json({ message: 'Admin access required' });
   }
   next();
 };
 
-// Authorization middleware for user or admin
-const requireUserOrAdmin = (req, res, next) => {
-  const targetUsername = req.params.username || req.body.username;
-  
-  if (req.user.role === 'admin' || req.user.username === targetUsername) {
-    next();
-  } else {
-    return res.status(403).json({
-      success: false,
-      message: 'Access denied'
-    });
-  }
+// Password hashing
+const hashPassword = (password) => {
+  return bcrypt.hashSync(password, 10);
 };
 
-// Utility functions
-const hashPassword = async (password) => {
-  return await bcrypt.hash(password, 10);
+// Verify password
+const verifyPassword = (password, hash) => {
+  return bcrypt.compareSync(password, hash);
 };
 
-const comparePassword = async (password, hashedPassword) => {
-  return await bcrypt.compare(password, hashedPassword);
-};
-
+// Generate JWT token
 const generateToken = (user) => {
-  return jwt.sign(
-    { username: user.username, role: user.role },
-    JWT_SECRET,
-    { expiresIn: '24h' }
-  );
+  return jwt.sign(user, JWT_SECRET, { expiresIn: '1h' });
 };
 
-module.exports = {
-  authenticateToken,
-  requireAdmin,
-  requireUserOrAdmin,
-  hashPassword,
-  comparePassword,
-  generateToken
-};
+// Export
+module.exports = { authenticateToken, requireAdmin, hashPassword, verifyPassword, generateToken };

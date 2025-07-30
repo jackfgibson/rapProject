@@ -1,179 +1,52 @@
 const express = require('express');
-const database = require('../database');
+const fs = require('fs');
+const database = JSON.parse(fs.readFileSync('./database.json'));
 const { authenticateToken, requireAdmin } = require('../auth');
 
 const router = express.Router();
 
-// GET /api/products - Get all products (public)
-router.get('/', async (req, res) => {
-  try {
-    const products = await database.getProducts();
-    res.json({
-      success: true,
-      data: products
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message
-    });
-  }
+// Get all products (Public)
+router.get('/', (req, res) => {
+  res.json({ success: true, data: database.products });
 });
 
-// GET /api/products/search - Search products (public)
-router.get('/search', async (req, res) => {
-  try {
-    const { q } = req.query;
-    
-    if (!q) {
-      return res.status(400).json({
-        success: false,
-        message: 'Search query is required'
-      });
-    }
-
-    const products = await database.searchProducts(q);
-    res.json({
-      success: true,
-      data: products,
-      query: q
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message
-    });
-  }
+// Search products (Public)
+router.get('/search', (req, res) => {
+  const { q, category } = req.query;
+  const filteredProducts = database.products.filter(product => 
+    (q ? product.name.toLowerCase().includes(q.toLowerCase()) : true) &&
+    (category ? product.category.toLowerCase() === category.toLowerCase() : true)
+  );
+  res.json({ success: true, data: filteredProducts });
 });
 
-// GET /api/products/:id - Get single product (public)
-router.get('/:id', async (req, res) => {
-  try {
-    const product = await database.getProductById(req.params.id);
-    
-    if (!product) {
-      return res.status(404).json({
-        success: false,
-        message: 'Product not found'
-      });
-    }
-
-    res.json({
-      success: true,
-      data: product
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message
-    });
-  }
+// Create product (Admin only)
+router.post('/', authenticateToken, requireAdmin, (req, res) => {
+  const { name, price, category, on_hand, description } = req.body;
+  const newProduct = { id: database.products.length + 1, name, price, category, on_hand, description };
+  database.products.push(newProduct);
+  fs.writeFileSync('./database.json', JSON.stringify(database, null, 2));
+  res.status(201).json({ success: true, data: newProduct });
 });
 
-// POST /api/products - Create product (admin only)
-router.post('/', authenticateToken, requireAdmin, async (req, res) => {
-  try {
-    const { name, price, category, on_hand, description } = req.body;
+// Update product (Admin only)
+router.patch('/:id', authenticateToken, requireAdmin, (req, res) => {
+  const product = database.products.find(p => p.id == req.params.id);
+  if (!product) return res.status(404).json({ message: 'Product not found' });
 
-    if (!name || !price || !category || on_hand === undefined) {
-      return res.status(400).json({
-        success: false,
-        message: 'Name, price, category, and on_hand are required'
-      });
-    }
-
-    const productData = {
-      name,
-      price: parseFloat(price),
-      category,
-      on_hand: parseInt(on_hand),
-      description: description || ''
-    };
-
-    const newProduct = await database.createProduct(productData);
-    
-    res.status(201).json({
-      success: true,
-      data: newProduct,
-      message: 'Product created successfully'
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message
-    });
-  }
+  Object.assign(product, req.body);
+  fs.writeFileSync('./database.json', JSON.stringify(database, null, 2));
+  res.json({ success: true, data: product });
 });
 
-// PATCH /api/products/:id - Update product (admin only)
-router.patch('/:id', authenticateToken, requireAdmin, async (req, res) => {
-  try {
-    const updates = {};
-    const allowedFields = ['name', 'price', 'category', 'on_hand', 'description'];
-    
-    allowedFields.forEach(field => {
-      if (req.body[field] !== undefined) {
-        if (field === 'price') {
-          updates[field] = parseFloat(req.body[field]);
-        } else if (field === 'on_hand') {
-          updates[field] = parseInt(req.body[field]);
-        } else {
-          updates[field] = req.body[field];
-        }
-      }
-    });
+// Delete product (Admin only)
+router.delete('/:id', authenticateToken, requireAdmin, (req, res) => {
+  const productIndex = database.products.findIndex(p => p.id == req.params.id);
+  if (productIndex === -1) return res.status(404).json({ message: 'Product not found' });
 
-    if (Object.keys(updates).length === 0) {
-      return res.status(400).json({
-        success: false,
-        message: 'No valid fields to update'
-      });
-    }
-
-    const updatedProduct = await database.updateProduct(req.params.id, updates);
-    
-    if (!updatedProduct) {
-      return res.status(404).json({
-        success: false,
-        message: 'Product not found'
-      });
-    }
-
-    res.json({
-      success: true,
-      data: updatedProduct,
-      message: 'Product updated successfully'
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message
-    });
-  }
-});
-
-// DELETE /api/products/:id - Delete product (admin only)
-router.delete('/:id', authenticateToken, requireAdmin, async (req, res) => {
-  try {
-    const deleted = await database.deleteProduct(req.params.id);
-    
-    if (!deleted) {
-      return res.status(404).json({
-        success: false,
-        message: 'Product not found'
-      });
-    }
-
-    res.json({
-      success: true,
-      message: 'Product deleted successfully'
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: error.message
-    });
-  }
+  database.products.splice(productIndex, 1);
+  fs.writeFileSync('./database.json', JSON.stringify(database, null, 2));
+  res.json({ success: true, message: 'Product deleted successfully' });
 });
 
 module.exports = router;

@@ -5,6 +5,7 @@ const rateLimit = require('express-rate-limit');
 const productRoutes = require('./routes/products');
 const userRoutes = require('./routes/users');
 const orderRoutes = require('./routes/orders');
+const { authenticateToken } = require('./auth');
 
 const app = express();
 
@@ -16,40 +17,32 @@ app.use(cors());
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100, // limit each IP to 100 requests per windowMs
-  message: 'Too many requests from this IP, please try again later.'
+  message: 'Too many requests, please try again later.'
 });
 app.use(limiter);
 
 // Body parsing middleware
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
 // Health check endpoint
 app.get('/health', (req, res) => {
   res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
-// API routes
+// API Routes
 app.use('/api/products', productRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/orders', orderRoutes);
 
-// 404 handler
+// Catch-all 404
 app.use('*', (req, res) => {
-  res.status(404).json({
-    success: false,
-    message: 'Route not found'
-  });
+  res.status(404).json({ message: 'Route not found' });
 });
 
 // Global error handler
-app.use((error, req, res, next) => {
-  console.error('Error:', error);
-  res.status(error.status || 500).json({
-    success: false,
-    message: error.message || 'Internal server error'
-  });
+app.use((err, req, res, next) => {
+  console.error(err);
+  res.status(err.status || 500).json({ message: err.message || 'Internal server error' });
 });
 
-// Export the Express app as a serverless function
 module.exports = app;
