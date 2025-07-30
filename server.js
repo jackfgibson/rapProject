@@ -43,4 +43,13 @@ app.use('*', (req, res) => {
 });
 
 // Global error handler
-app.us
+app.use((error, req, res, next) => {
+  console.error('Error:', error);
+  res.status(error.status || 500).json({
+    success: false,
+    message: error.message || 'Internal server error'
+  });
+});
+
+// Export the Express app as a serverless function
+module.exports = app;
