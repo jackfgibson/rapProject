@@ -1,11 +1,7 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-const fs = require('fs');
 
-// Load database
-const database = JSON.parse(fs.readFileSync('./database.json'));
-
-const JWT_SECRET = 'your-secret-key';
+const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
 // Authentication middleware
 const authenticateToken = (req, res, next) => {

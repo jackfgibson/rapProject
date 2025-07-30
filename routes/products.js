@@ -1,52 +1,85 @@
 const express = require('express');
-const fs = require('fs');
-const database = JSON.parse(fs.readFileSync('./database.json'));
+const database = require('../database');
 const { authenticateToken, requireAdmin } = require('../auth');
 
 const router = express.Router();
 
 // Get all products (Public)
-router.get('/', (req, res) => {
-  res.json({ success: true, data: database.products });
+router.get('/', async (req, res) => {
+  try {
+    const products = await database.getProducts();
+    res.json({ success: true, data: products });
+  } catch (error) {
+    console.error('Error getting products:', error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
 });
 
 // Search products (Public)
-router.get('/search', (req, res) => {
-  const { q, category } = req.query;
-  const filteredProducts = database.products.filter(product => 
-    (q ? product.name.toLowerCase().includes(q.toLowerCase()) : true) &&
-    (category ? product.category.toLowerCase() === category.toLowerCase() : true)
-  );
-  res.json({ success: true, data: filteredProducts });
+router.get('/search', async (req, res) => {
+  try {
+    const { q, category } = req.query;
+    let products = await database.getProducts();
+    
+    if (q) {
+      products = products.filter(product => 
+        product.name.toLowerCase().includes(q.toLowerCase())
+      );
+    }
+    
+    if (category) {
+      products = products.filter(product => 
+        product.category.toLowerCase() === category.toLowerCase()
+      );
+    }
+    
+    res.json({ success: true, data: products });
+  } catch (error) {
+    console.error('Error searching products:', error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
 });
 
 // Create product (Admin only)
-router.post('/', authenticateToken, requireAdmin, (req, res) => {
-  const { name, price, category, on_hand, description } = req.body;
-  const newProduct = { id: database.products.length + 1, name, price, category, on_hand, description };
-  database.products.push(newProduct);
-  fs.writeFileSync('./database.json', JSON.stringify(database, null, 2));
-  res.status(201).json({ success: true, data: newProduct });
+router.post('/', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const { name, price, category, on_hand, description } = req.body;
+    const newProduct = await database.createProduct({
+      name, price, category, on_hand, description
+    });
+    res.status(201).json({ success: true, data: newProduct });
+  } catch (error) {
+    console.error('Error creating product:', error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
 });
 
 // Update product (Admin only)
-router.patch('/:id', authenticateToken, requireAdmin, (req, res) => {
-  const product = database.products.find(p => p.id == req.params.id);
-  if (!product) return res.status(404).json({ message: 'Product not found' });
-
-  Object.assign(product, req.body);
-  fs.writeFileSync('./database.json', JSON.stringify(database, null, 2));
-  res.json({ success: true, data: product });
+router.patch('/:id', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const product = await database.updateProduct(req.params.id, req.body);
+    if (!product) {
+      return res.status(404).json({ success: false, message: 'Product not found' });
+    }
+    res.json({ success: true, data: product });
+  } catch (error) {
+    console.error('Error updating product:', error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
 });
 
 // Delete product (Admin only)
-router.delete('/:id', authenticateToken, requireAdmin, (req, res) => {
-  const productIndex = database.products.findIndex(p => p.id == req.params.id);
-  if (productIndex === -1) return res.status(404).json({ message: 'Product not found' });
-
-  database.products.splice(productIndex, 1);
-  fs.writeFileSync('./database.json', JSON.stringify(database, null, 2));
-  res.json({ success: true, message: 'Product deleted successfully' });
+router.delete('/:id', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const deleted = await database.deleteProduct(req.params.id);
+    if (!deleted) {
+      return res.status(404).json({ success: false, message: 'Product not found' });
+    }
+    res.json({ success: true, message: 'Product deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting product:', error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
 });
 
 module.exports = router;
