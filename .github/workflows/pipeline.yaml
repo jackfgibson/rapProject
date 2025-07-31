@@ -12,6 +12,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
         
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -48,3 +50,8 @@ jobs:
             echo "❌ No vercel.json found"
             exit 1
           fi
+          
+      - name: Secret Scanning
+        uses: trufflesecurity/trufflehog@main
+        with:
+          extra_args: --results=verified,unknown
