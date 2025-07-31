@@ -1,0 +1,67 @@
+name: Table Tennis API CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  scan-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Security audit
+        run: npm audit --audit-level=moderate
+        continue-on-error: true
+        
+      - name: Check syntax
+        run: |
+          echo "Checking for syntax errors..."
+          node -c server.js
+          node -c database.js
+          node -c auth.js
+          for file in routes/*.js; do
+            if [ -f "$file" ]; then
+              node -c "$file"
+            fi
+          done
+          echo "Syntax check completed"
+          
+      - name: Verify Vercel config
+        run: |
+          if [ -f "vercel.json" ]; then
+            echo "✅ Vercel configuration found"
+            cat vercel.json
+          else
+            echo "❌ No vercel.json found"
+            exit 1
+          fi
+          
+      - name: Deploy to Vercel (if secrets configured)
+        if: github.ref == 'refs/heads/main' && secrets.VERCEL_TOKEN != ''
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-args: '--prod'
+          
+      - name: Deploy Preview (if secrets configured)
+        if: github.event_name == 'pull_request' && secrets.VERCEL_TOKEN != ''
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
