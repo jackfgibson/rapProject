@@ -53,10 +53,13 @@ jobs:
           
       - name: Secret Scanning
         run: |
+          echo "Testing with simple secret file..."
+          cat secret-test.txt
+          echo "Running TruffleHog..."
           docker run --rm -v "$PWD:/pwd" \
             trufflesecurity/trufflehog:latest \
             filesystem /pwd \
-            --results=verified,unknown \
-            --fail \
+            --only-verified=false \
             --debug \
-            --no-verification
+            --fail
+          echo "TruffleHog scan completed"
