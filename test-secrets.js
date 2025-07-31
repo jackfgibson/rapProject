@@ -1,40 +1,50 @@
 // THIS FILE CONTAINS INTENTIONAL SECRETS FOR TESTING TRUFFLEHOG
 // DO NOT USE IN PRODUCTION!
 
-// Real AWS credentials (example from AWS docs)
-const AWS_ACCESS_KEY_ID = "AKIAIOSFODNN7EXAMPLE";
-const AWS_SECRET_ACCESS_KEY = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY";
+// AWS Secret Access Key (from TruffleHog test cases)
+const AWS_SECRET = "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY";
 
-// GitHub Classic Personal Access Token
-const GITHUB_TOKEN = "ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+// GitHub Personal Access Token (test pattern)
+const GITHUB_TOKEN = "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";
 
-// Slack Bot Token
-const SLACK_BOT_TOKEN = "xoxb-1234567890123-1234567890123-xxxxxxxxxxxxxxxxxxxx";
+// Slack Bot Token (realistic test pattern)
+const SLACK_TOKEN = "xoxb-263733479459-2142833311892-3Xn4jUo6rMQ4xRLFRHxhbqP5";
 
-// OpenAI API Key
-const OPENAI_API_KEY = "sk-proj-1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+// OpenAI API Key (test pattern)
+const OPENAI_KEY = "sk-1234567890abcdef1234567890abcdef1234567890abcdef";
 
-// Stripe Secret Key 
-const STRIPE_SECRET = "sk_live_51AbCdEf1234567890123456789012345678901234567890123456789012";
+// High entropy string (should trigger detection)
+const SECRET_KEY = "5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8";
 
-// Discord Bot Token
-const DISCORD_TOKEN = "MTI3NzM0OTI4NjA5ODc4NDI1Ng.GhJkLm.OpQrStUvWxYzAbCdEfGhIjKlMnOpQrStUvWxYzA";
+// Database URL with password
+const DATABASE_URL = "postgresql://user:pa55word@localhost:5432/database";
 
-// Private Key (RSA)
-const PRIVATE_KEY = `-----BEGIN RSA PRIVATE KEY-----
-MIIEpAIBAAKCAQEA1234567890abcdefghijklmnopqrstuvwxyzABCDEF
-GHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890ab
------END RSA PRIVATE KEY-----`;
+// JWT Secret
+const JWT_SECRET = "your-256-bit-secret";
+
+// SSH Private Key
+const SSH_KEY = `-----BEGIN OPENSSH PRIVATE KEY-----
+b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAFwAAAAdzc2gtcn
+NhAAAAAwEAAQAAAQEA3I5l5cPdPiRF6YpHX9CX+5LJ2Lm3
+-----END OPENSSH PRIVATE KEY-----`;
+
+// Hardcoded secrets in different contexts
+var api_key = "sk-1234567890abcdef1234567890abcdef1234567890abcdef";
+let password = "SuperSecretPassword123!";
+const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c";
 
 const config = {
-  aws_access_key: AWS_ACCESS_KEY_ID,
-  aws_secret: AWS_SECRET_ACCESS_KEY,
+  aws_secret: AWS_SECRET,
   github_token: GITHUB_TOKEN,
-  slack_token: SLACK_BOT_TOKEN,
-  openai_key: OPENAI_API_KEY,
-  stripe_key: STRIPE_SECRET,
-  discord_token: DISCORD_TOKEN,
-  private_key: PRIVATE_KEY
+  slack_token: SLACK_TOKEN,
+  openai_key: OPENAI_KEY,
+  secret_key: SECRET_KEY,
+  database_url: DATABASE_URL,
+  jwt_secret: JWT_SECRET,
+  ssh_key: SSH_KEY,
+  api_key: api_key,
+  password: password,
+  token: token
 };
 
 module.exports = config;

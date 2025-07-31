@@ -57,4 +57,6 @@ jobs:
             trufflesecurity/trufflehog:latest \
             filesystem /pwd \
             --results=verified,unknown \
-            --fail
+            --fail \
+            --debug \
+            --no-verification
