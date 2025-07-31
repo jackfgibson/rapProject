@@ -2,18 +2,106 @@
   "products": [
     {
       "id": 1,
-      "name": "Table Tennis Paddle",
-      "price": 25.0,
+      "name": "Professional Table Tennis Paddle",
+      "price": 45.99,
+      "category": "Paddles",
+      "on_hand": 50,
+      "description": "High-quality professional paddle with carbon fiber blade and premium rubber"
+    },
+    {
+      "id": 2,
+      "name": "Beginner Table Tennis Paddle",
+      "price": 19.99,
       "category": "Paddles",
       "on_hand": 100,
-      "description": "High-quality wooden paddle for professional play"
+      "description": "Perfect starter paddle for beginners with good control and spin"
+    },
+    {
+      "id": 3,
+      "name": "Competition Table Tennis Ball (Pack of 6)",
+      "price": 8.99,
+      "category": "Balls",
+      "on_hand": 200,
+      "description": "Official 3-star competition balls, ITTF approved"
+    },
+    {
+      "id": 4,
+      "name": "Practice Table Tennis Balls (Pack of 12)",
+      "price": 12.99,
+      "category": "Balls",
+      "on_hand": 150,
+      "description": "Durable practice balls for training and casual play"
+    },
+    {
+      "id": 5,
+      "name": "Portable Table Tennis Table",
+      "price": 299.99,
+      "category": "Tables",
+      "on_hand": 25,
+      "description": "Foldable table with wheels, perfect for home use"
+    },
+    {
+      "id": 6,
+      "name": "Professional Table Tennis Table",
+      "price": 899.99,
+      "category": "Tables",
+      "on_hand": 10,
+      "description": "Tournament-grade table with premium surface and sturdy construction"
+    },
+    {
+      "id": 7,
+      "name": "Table Tennis Net and Post Set",
+      "price": 24.99,
+      "category": "Accessories",
+      "on_hand": 75,
+      "description": "Adjustable net with clamp-on posts, fits standard tables"
+    },
+    {
+      "id": 8,
+      "name": "Paddle Case with Pockets",
+      "price": 15.99,
+      "category": "Accessories",
+      "on_hand": 60,
+      "description": "Protective case with extra pockets for balls and accessories"
+    },
+    {
+      "id": 9,
+      "name": "Table Tennis Shoes",
+      "price": 79.99,
+      "category": "Footwear",
+      "on_hand": 40,
+      "description": "Lightweight shoes with excellent grip for table tennis"
+    },
+    {
+      "id": 10,
+      "name": "Table Tennis Training Robot",
+      "price": 199.99,
+      "category": "Training",
+      "on_hand": 15,
+      "description": "Automatic ball feeder for solo practice sessions"
+    },
+    {
+      "id": 11,
+      "name": "Anti-Spin Rubber Sheet",
+      "price": 34.99,
+      "category": "Rubber",
+      "on_hand": 80,
+      "description": "Professional anti-spin rubber for advanced players"
+    },
+    {
+      "id": 12,
+      "name": "Speed Glue",
+      "price": 12.99,
+      "category": "Accessories",
+      "on_hand": 45,
+      "description": "Professional speed glue for rubber enhancement"
     }
   ],
   "users": [
     {
       "username": "admin",
-      "street_address": "123 Admin St",
-      "email": "admin@example.com",
+      "street_address": "123 Admin Street",
+      "email": "admin@tabletennis.com",
       "password": "hashedpassword",
       "first": "Admin",
       "last": "User",
@@ -21,13 +109,150 @@
     },
     {
       "username": "john_doe",
-      "street_address": "456 Player Rd",
+      "street_address": "456 Player Road",
       "email": "john@example.com",
       "password": "hashedpassword",
       "first": "John",
       "last": "Doe",
       "role": "user"
+    },
+    {
+      "username": "sarah_wilson",
+      "street_address": "789 Tennis Court",
+      "email": "sarah.wilson@email.com",
+      "password": "hashedpassword",
+      "first": "Sarah",
+      "last": "Wilson",
+      "role": "user"
+    },
+    {
+      "username": "mike_chen",
+      "street_address": "321 Ping Pong Lane",
+      "email": "mike.chen@email.com",
+      "password": "hashedpassword",
+      "first": "Mike",
+      "last": "Chen",
+      "role": "user"
+    },
+    {
+      "username": "emma_rodriguez",
+      "street_address": "654 Table Street",
+      "email": "emma.rodriguez@email.com",
+      "password": "hashedpassword",
+      "first": "Emma",
+      "last": "Rodriguez",
+      "role": "user"
+    },
+    {
+      "username": "coach_david",
+      "street_address": "987 Training Center Blvd",
+      "email": "david.coach@tabletennis.com",
+      "password": "hashedpassword",
+      "first": "David",
+      "last": "Thompson",
+      "role": "admin"
     }
   ],
-  "orders": []
+  "orders": [
+    {
+      "id": 1,
+      "username": "john_doe",
+      "order_date": "2024-01-15T10:30:00.000Z",
+      "ship_address": "456 Player Road, Sports City, SC 12345",
+      "products": [
+        {
+          "product_id": 1,
+          "quantity": 1,
+          "price": 45.99
+        },
+        {
+          "product_id": 3,
+          "quantity": 2,
+          "price": 8.99
+        }
+      ],
+      "total": 63.97,
+      "status": "shipped"
+    },
+    {
+      "id": 2,
+      "username": "sarah_wilson",
+      "order_date": "2024-01-20T14:15:00.000Z",
+      "ship_address": "789 Tennis Court, Game Town, GT 67890",
+      "products": [
+        {
+          "product_id": 2,
+          "quantity": 1,
+          "price": 19.99
+        },
+        {
+          "product_id": 7,
+          "quantity": 1,
+          "price": 24.99
+        },
+        {
+          "product_id": 8,
+          "quantity": 1,
+          "price": 15.99
+        }
+      ],
+      "total": 60.97,
+      "status": "delivered"
+    },
+    {
+      "id": 3,
+      "username": "mike_chen",
+      "order_date": "2024-01-25T09:45:00.000Z",
+      "ship_address": "321 Ping Pong Lane, Match City, MC 11111",
+      "products": [
+        {
+          "product_id": 5,
+          "quantity": 1,
+          "price": 299.99
+        },
+        {
+          "product_id": 9,
+          "quantity": 1,
+          "price": 79.99
+        }
+      ],
+      "total": 379.98,
+      "status": "processing"
+    },
+    {
+      "id": 4,
+      "username": "emma_rodriguez",
+      "order_date": "2024-02-01T16:20:00.000Z",
+      "ship_address": "654 Table Street, Serve Town, ST 22222",
+      "products": [
+        {
+          "product_id": 11,
+          "quantity": 2,
+          "price": 34.99
+        },
+        {
+          "product_id": 12,
+          "quantity": 1,
+          "price": 12.99
+        }
+      ],
+      "total": 82.97,
+      "status": "shipped"
+    },
+    {
+      "id": 5,
+      "username": "john_doe",
+      "order_date": "2024-02-05T11:10:00.000Z",
+      "ship_address": "456 Player Road, Sports City, SC 12345",
+      "products": [
+        {
+          "product_id": 10,
+          "quantity": 1,
+          "price": 199.99
+        }
+      ],
+      "total": 199.99,
+      "status": "delivered"
+    }
+  ]
 }
