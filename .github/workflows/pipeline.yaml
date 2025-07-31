@@ -52,6 +52,9 @@ jobs:
           fi
           
       - name: Secret Scanning
-        uses: trufflesecurity/trufflehog@main
-        with:
-          extra_args: --results=verified,unknown --fail
+        run: |
+          docker run --rm -v "$PWD:/pwd" \
+            trufflesecurity/trufflehog:latest \
+            filesystem /pwd \
+            --results=verified,unknown \
+            --fail
