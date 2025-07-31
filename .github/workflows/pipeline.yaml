@@ -7,7 +7,7 @@ on:
     branches: [ main, develop ]
 
 jobs:
-  scan-and-deploy:
+  validate-and-test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -37,7 +37,7 @@ jobs:
               node -c "$file"
             fi
           done
-          echo "Syntax check completed"
+          echo "✅ Syntax check completed"
           
       - name: Verify Vercel config
         run: |
@@ -48,20 +48,3 @@ jobs:
             echo "❌ No vercel.json found"
             exit 1
           fi
-          
-      - name: Deploy to Vercel (if secrets configured)
-        if: github.ref == 'refs/heads/main' && secrets.VERCEL_TOKEN != ''
-        uses: amondnet/vercel-action@v25
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          vercel-args: '--prod'
-          
-      - name: Deploy Preview (if secrets configured)
-        if: github.event_name == 'pull_request' && secrets.VERCEL_TOKEN != ''
-        uses: amondnet/vercel-action@v25
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
