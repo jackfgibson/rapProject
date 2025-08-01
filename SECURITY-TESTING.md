@@ -1,8 +1,8 @@
-# Security Setup
+# Code Quality & Security Setup
 
-This project implements TruffleHog secret scanning in the CI/CD pipeline.
+This project implements comprehensive code quality and security analysis in the CI/CD pipeline.
 
-## 🔍 Security Tools Implemented
+## 🔍 Security & Quality Tools Implemented
 
 ### TruffleHog (Secret Scanning)
 - **Purpose**: Detects hardcoded secrets, API keys, and credentials
@@ -18,31 +18,97 @@ This project implements TruffleHog secret scanning in the CI/CD pipeline.
   - RSA Private Keys
   - Stripe API keys
 
-## 🚀 How to Test
+### CodeQL (Code Security Analysis)
+- **Purpose**: Static analysis for security vulnerabilities and code quality
+- **Configuration**: GitHub's official CodeQL action
+- **Languages**: JavaScript/Node.js
+- **Queries**: Security-extended + Quality rules
+- **Detection Types**:
+  - SQL Injection vulnerabilities
+  - Cross-site scripting (XSS)
+  - Path traversal attacks
+  - Code injection
+  - Authentication bypass
+  - Data flow analysis
 
-### Prerequisites
-- No additional setup required! TruffleHog works out of the box.
+### SonarCloud (Code Quality & Security)
+- **Purpose**: Comprehensive code quality, security, and maintainability analysis
+- **Integration**: SonarCloud.io platform
+- **Features**:
+  - Code smells detection
+  - Security hotspots
+  - Bugs and vulnerabilities
+  - Code coverage analysis
+  - Technical debt measurement
+  - Duplication detection
 
-### How It Works
-1. **Automatic Scanning**: TruffleHog runs on every push and pull request
-2. **Real-time Protection**: Detects secrets before they reach production
-3. **Build Integration**: Will fail builds if secrets are detected
-4. **Continuous Monitoring**: Ongoing protection for your codebase
+## 🚀 Setup Instructions
 
-### Expected Behavior
-- **Clean Code**: Builds pass when no secrets are detected
-- **Secret Detection**: Builds fail when secrets are found
-- **GitHub Actions Log**: Detailed scanning results in workflow logs
+### SonarCloud Setup
+1. **Create SonarCloud Account**:
+   - Go to [SonarCloud.io](https://sonarcloud.io)
+   - Sign up with your GitHub account
+   - Import your repository
 
-## 🔧 Configuration
+2. **Configure Organization**:
+   - Create organization: `jackfgibson`
+   - Set project key: `jackfgibson_rapProject`
 
-The TruffleHog configuration in `.github/workflows/pipeline.yaml`:
+3. **Generate Token**:
+   - Go to Account → Security → Generate Token
+   - Add as `SONAR_TOKEN` in GitHub repository secrets
 
+### CodeQL Setup
+- **No additional setup required!** 
+- CodeQL is built into GitHub and works automatically
+- Results appear in Security tab → Code scanning alerts
+
+### Pipeline Execution
+1. **CodeQL Initialize**: Sets up static analysis scanning
+2. **Autobuild**: Automatically builds the project for analysis
+3. **CodeQL Analyze**: Performs security and quality analysis
+4. **SonarCloud Scan**: Comprehensive code quality analysis
+5. **Secret Scanning**: TruffleHog checks for leaked secrets
+
+### Results & Monitoring
+- **GitHub Security Tab**: CodeQL findings and alerts
+- **SonarCloud Dashboard**: Detailed quality metrics and trends
+- **Pull Request Checks**: All tools provide status checks
+- **GitHub Actions Log**: Detailed scanning results
+
+## 🔧 Configuration Files
+
+### GitHub Actions Workflow
 ```yaml
-- name: Secret Scanning
-  uses: trufflesecurity/trufflehog@main
+permissions:
+  security-events: write
+  contents: read
+  actions: read
+
+- name: Initialize CodeQL
+  uses: github/codeql-action/init@v3
   with:
-    extra_args: --results=verified,unknown
+    languages: javascript
+    queries: security-extended,quality
+
+- name: Autobuild  
+  uses: github/codeql-action/autobuild@v3
+
+- name: Perform CodeQL Analysis
+  uses: github/codeql-action/analyze@v3
+
+- name: SonarCloud Scan
+  uses: SonarSource/sonarcloud-github-action@master
+  env:
+    SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+```
+
+### SonarCloud Configuration (`sonar-project.properties`)
+```properties
+sonar.projectKey=jackfgibson_rapProject
+sonar.organization=jackfgibson
+sonar.sources=.
+sonar.exclusions=node_modules/**,*.md
 ```
 
 ## 📊 Monitoring Results
