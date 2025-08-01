@@ -71,7 +71,7 @@ jobs:
           category: "/language:javascript"
           
       - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@master
+        uses: SonarSource/sonarqube-scan-action@v4
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -81,7 +81,6 @@ jobs:
             -Dsonar.organization=jackfgibson
             -Dsonar.sources=.
             -Dsonar.exclusions=node_modules/**,*.md
-            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
           
       - name: Secret Scanning
         uses: trufflesecurity/trufflehog@main
