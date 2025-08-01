@@ -1,71 +1,43 @@
-# Security Testing Setup
+# Security Setup
 
-This project includes intentional secrets for testing our CI/CD security scanning tools.
+This project implements TruffleHog secret scanning in the CI/CD pipeline.
 
 ## 🔍 Security Tools Implemented
 
 ### TruffleHog (Secret Scanning)
 - **Purpose**: Detects hardcoded secrets, API keys, and credentials
-- **Test File**: `test-secrets.js`
-- **Configuration**: Uses official TruffleHog GitHub Action structure
-- **Expected Detections**:
+- **Configuration**: Uses official TruffleHog GitHub Action
+- **Integration**: Runs automatically on every push and pull request
+- **Detection Types**:
   - AWS Access Keys
   - GitHub Personal Access Tokens
-  - Slack Webhook URLs
+  - Slack Tokens
   - API Keys (various formats)
   - Database connection strings with passwords
   - JWT secrets
   - RSA Private Keys
   - Stripe API keys
 
-## ⚠️ IMPORTANT WARNINGS
-
-### DO NOT USE IN PRODUCTION!
-- The secrets in `test-secrets.js` are fake but follow real patterns
-- These files are for CI/CD testing purposes only
-
 ## 🚀 How to Test
 
 ### Prerequisites
 - No additional setup required! TruffleHog works out of the box.
 
-### Running Tests
-1. **Push to main/develop branch** or **create a pull request**
-2. **GitHub Actions will run** and should show:
-   - ✅ TruffleHog finding secrets in `test-secrets.js`
-   - ❌ **Build will FAIL** when secrets are detected (this is the desired behavior!)
+### How It Works
+1. **Automatic Scanning**: TruffleHog runs on every push and pull request
+2. **Real-time Protection**: Detects secrets before they reach production
+3. **Build Integration**: Will fail builds if secrets are detected
+4. **Continuous Monitoring**: Ongoing protection for your codebase
 
-### Expected Results
-- **TruffleHog**: Should detect ~8-10 different types of secrets
-- **Build Status**: Will show as failed/red due to detected secrets
-- **GitHub Actions Log**: Detailed secret detection results
+### Expected Behavior
+- **Clean Code**: Builds pass when no secrets are detected
+- **Secret Detection**: Builds fail when secrets are found
+- **GitHub Actions Log**: Detailed scanning results in workflow logs
 
-## 🧹 Cleanup After Testing
+## 🔧 Configuration
 
-Once you've verified TruffleHog is working:
+The TruffleHog configuration in `.github/workflows/pipeline.yaml`:
 
-1. **Remove test files**:
-   ```bash
-   rm test-secrets.js
-   rm SECURITY-TESTING.md
-   ```
-
-2. **Commit the cleanup**:
-   ```bash
-   git add .
-   git commit -m "Remove security testing files"
-   git push
-   ```
-
-## 📊 Monitoring Results
-
-- **GitHub Actions Tab**: View detailed TruffleHog logs
-- **Pull Request Checks**: See security status on PRs
-- **Build Status**: Red/failed when secrets detected, green when clean
-
-## 🔧 Customizing TruffleHog Settings
-
-### Current Configuration
 ```yaml
 - name: Secret Scanning
   uses: trufflesecurity/trufflehog@main
@@ -73,17 +45,38 @@ Once you've verified TruffleHog is working:
     extra_args: --results=verified,unknown
 ```
 
-### Available Options
+## 📊 Monitoring Results
+
+- **GitHub Actions Tab**: View detailed TruffleHog logs
+- **Pull Request Checks**: See security status on PRs
+- **Build Status**: Red/failed when secrets detected, green when clean
+
+## 🔧 Customization Options
+
+### Available Configuration
 - `--results=verified` - Only verified secrets (reduces false positives)
 - `--results=unknown` - Only potential secrets (may include false positives)  
 - `--results=verified,unknown` - Both verified and potential (current setting)
 - `--exclude-paths=file1,file2` - Skip specific files
 - `--exclude-detectors=detector1,detector2` - Skip specific secret types
 
-## 🎯 Success Criteria
+### Example Configurations
+```yaml
+# More strict (only verified secrets)
+extra_args: --results=verified
 
-Your TruffleHog setup is working correctly if:
-- [x] TruffleHog reports found secrets in the GitHub Actions log
-- [x] Build fails (red status) when secrets are detected
-- [x] Build passes (green status) when no secrets are present
-- [x] Secret detection appears in GitHub Actions detailed logs
+# Include all potential secrets
+extra_args: --results=verified,unknown
+
+# Exclude specific file types
+extra_args: --results=verified,unknown --exclude-paths=*.md,*.txt
+```
+
+## 🎯 Benefits
+
+Your security pipeline provides:
+- ✅ **Automatic secret detection** in code commits
+- ✅ **Prevention of secret leaks** to production
+- ✅ **Continuous monitoring** of your codebase
+- ✅ **Integration with CI/CD** pipeline
+- ✅ **Real-time feedback** on security issues
